@@ -21,6 +21,9 @@ public class BlackjackGameManager : MonoBehaviour
     public CanvasGroup playerPointsCanvasGroup; 
     public CanvasGroup dealerPointsCanvasGroup;
 
+    public BettingSystem bettingSystem;
+    public Player player;
+
     public bool canOpenMenu = true;
 
     void Awake()
@@ -43,6 +46,62 @@ public class BlackjackGameManager : MonoBehaviour
     }
 
     public void StartRound()
+    {
+        StartCoroutine(bettingSystem.FadeInText(1f));
+        canOpenMenu = true;
+        Debug.Log("Please place your bet to start the round.");
+        int playerBalance = bettingSystem.player.balance;
+        ResetGame();
+
+        
+
+        if (playerBalance <= 0)
+        {
+            // Display the result message and return to the main menu
+            resultText.gameObject.SetActive(true);
+            resultText.text = "You're out of money! Returning to the main menu...";
+
+            // Disable betting and gameplay
+            hitButton.interactable = false;
+            standButton.interactable = false;
+            restartButton.interactable = false;
+
+            // Optionally, wait for a few seconds before going back to the menu
+            StartCoroutine(ReturnToMainMenuAfterDelay(2f)); // Wait 2 seconds
+        }
+        else
+        {
+            // Proceed with starting the round as usual
+            bettingSystem.ClearBet();
+            bettingSystem.UpdateUI(); // Update balance UI before the new round
+
+            // Fade in the betting panel to allow the player to place a bet
+            StartCoroutine(bettingSystem.FadeInBettingPanel());
+
+            // Disable the hit/stand buttons until the bet is placed
+            hitButton.interactable = false;
+            standButton.interactable = false;
+        }
+    }
+
+    private IEnumerator ReturnToMainMenuAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        resultText.gameObject.SetActive(false);
+        bettingSystem.betTextCanvasGroup.alpha = 0f;
+        bettingSystem.balanceTextCanvasGroup.alpha = 0f;
+        FindObjectOfType<MenuManager>().ShowMainMenu();  // Go back to the main menu
+    }
+
+    public void OnBetPlaced()
+    {
+        if (bettingSystem.currentBet > 0)
+        {
+            DealCards(); // Start the game once a bet is placed
+        }
+    }
+
+    private void DealCards()
     {
         canOpenMenu = false;
         playerPointsCanvasGroup.alpha = 0f;
@@ -199,7 +258,12 @@ public class BlackjackGameManager : MonoBehaviour
         hitButton.interactable = false;
         standButton.interactable = false;
 
+        bool playerWon = result == "Player Wins!" || 
+            result == "Dealer Busts! Player Wins!";
+
+        bettingSystem.Payout(playerWon);
         restartButton.gameObject.SetActive(true);
+
     }
 
     public void RestartGame()
@@ -238,6 +302,9 @@ public class BlackjackGameManager : MonoBehaviour
         // Disable hit/stand buttons
         hitButton.gameObject.SetActive(false);
         standButton.gameObject.SetActive(false);
+
+        bettingSystem.bettingPanelCanvasGroup.alpha = 0f;
+
     }
 
     public void OpenMenu()
@@ -250,6 +317,9 @@ public class BlackjackGameManager : MonoBehaviour
 
         // Add your menu logic here, such as pausing or going back to the main menu
         ResetGame();
+
+        bettingSystem.balanceTextCanvasGroup.alpha = 0f;
+        bettingSystem.betTextCanvasGroup.alpha = 0f;
         FindObjectOfType<MenuManager>().ShowMainMenu();
     }
 
