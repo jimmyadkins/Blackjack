@@ -69,6 +69,13 @@ public class BettingSystem : MonoBehaviour
         UpdateUI();
     }
 
+    public void CancelBet()
+    {
+        player.AddWinnings(currentBet);
+        currentBet = 0;
+        UpdateUI();
+    }
+
     // Fade in the betting panel
     public IEnumerator FadeInBettingPanel()
     {

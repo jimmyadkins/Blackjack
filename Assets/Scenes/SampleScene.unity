@@ -7031,7 +7031,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 541303564}
         m_TargetAssemblyTypeName: BettingSystem, Assembly-CSharp
-        m_MethodName: ClearBet
+        m_MethodName: CancelBet
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

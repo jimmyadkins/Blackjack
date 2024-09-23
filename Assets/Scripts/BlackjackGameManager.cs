@@ -91,6 +91,7 @@ public class BlackjackGameManager : MonoBehaviour
         bettingSystem.betTextCanvasGroup.alpha = 0f;
         bettingSystem.balanceTextCanvasGroup.alpha = 0f;
         FindObjectOfType<MenuManager>().ShowMainMenu();  // Go back to the main menu
+        bettingSystem.player.ResetBalance();
     }
 
     public void OnBetPlaced()
@@ -178,6 +179,7 @@ public class BlackjackGameManager : MonoBehaviour
     {
         canOpenMenu = false;
         hitButton.interactable = false;
+        standButton.interactable = false;
         StartCoroutine(DealPlayerCard());
     }
 
@@ -191,6 +193,7 @@ public class BlackjackGameManager : MonoBehaviour
         }
 
         hitButton.interactable = true;
+        standButton.interactable = true;
         canOpenMenu = true;
 
         if (playerHand.IsBusted())
