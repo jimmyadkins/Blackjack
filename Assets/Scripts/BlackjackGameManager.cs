@@ -172,7 +172,7 @@ public class BlackjackGameManager : MonoBehaviour
     private IEnumerator EnableHitButtonAfterDealing()
     {
         //canOpenMenu = false;
-        while (playerHand.isDealing)
+        while (playerHand.isDealing || dealerHand.isDealing)
         {
             yield return null;
         }
@@ -185,7 +185,7 @@ public class BlackjackGameManager : MonoBehaviour
     private IEnumerator PlayerStandAfterDealing()
     {
         //canOpenMenu = false;
-        while (playerHand.isDealing)
+        while (playerHand.isDealing || dealerHand.isDealing)
         {
             yield return null;
         }
@@ -221,7 +221,7 @@ public class BlackjackGameManager : MonoBehaviour
 
         hitButton.interactable = true;
         standButton.interactable = true;
-        canOpenMenu = true;
+        //canOpenMenu = true;
 
         if (playerHand.IsBusted())
         {

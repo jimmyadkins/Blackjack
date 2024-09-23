@@ -107,7 +107,7 @@ public class BettingSystem : MonoBehaviour
             yield return null;
         }
         bettingPanelCanvasGroup.alpha = 0f;
-        blackjackGameManager.canOpenMenu = true;
+        //blackjackGameManager.canOpenMenu = true;
     }
 
     // Method to payout the winnings
