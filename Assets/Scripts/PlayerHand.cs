@@ -70,6 +70,7 @@ public class PlayerHand : MonoBehaviour
 
     public void AddCardToHand(Card card)
     {
+        Debug.Log("Adding card to hand");
         hand.Add(card);
 
         RecalculateHandValue();

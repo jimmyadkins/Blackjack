@@ -49,6 +49,7 @@ public class BlackjackGameManager : MonoBehaviour
     {
         StartCoroutine(bettingSystem.FadeInText(1f));
         canOpenMenu = true;
+        restartButton.interactable = true;
         Debug.Log("Please place your bet to start the round.");
         int playerBalance = bettingSystem.player.balance;
         ResetGame();
@@ -102,6 +103,11 @@ public class BlackjackGameManager : MonoBehaviour
         }
     }
 
+    private Sprite GetCardSprite(string cardName)
+    {
+        // Assuming you have a way to retrieve card sprites by their name
+        return deck.cardSprites.Find(sprite => sprite.name == cardName);
+    }
     private void DealCards()
     {
         canOpenMenu = false;
@@ -113,6 +119,15 @@ public class BlackjackGameManager : MonoBehaviour
         restartButton.gameObject.SetActive(false);
         playerHand.ResetHand();
         dealerHand.ResetHand();
+
+        //// Test case: Give the player a Blackjack (Ace and 10-value card)
+        //Card aceOfSpades = new Card("Spades", 1, GetCardSprite("spades__a"));
+        //Card tenOfHearts = new Card("Hearts", 10, GetCardSprite("hearts__10"));
+
+        //playerHand.AddCardToHand(aceOfSpades);
+        //playerHand.AddCardToHand(tenOfHearts);
+        //dealerHand.AddCardToHand(aceOfSpades);
+        //dealerHand.AddCardToHand(tenOfHearts);
 
         playerHand.AddCardToHand(deck.DealCard());
         dealerHand.AddCardToHand(deck.DealCard());
@@ -134,9 +149,7 @@ public class BlackjackGameManager : MonoBehaviour
 
         if (playerHand.HasBlackjack())
         {
-            hitButton.interactable = false;
-            standButton.interactable = false;
-            PlayerStand();
+            StartCoroutine(PlayerStandAfterDealing());
         }
         else
         {
@@ -166,6 +179,20 @@ public class BlackjackGameManager : MonoBehaviour
 
         hitButton.interactable = true;
         standButton.interactable = true;
+        //canOpenMenu = true;
+    }
+
+    private IEnumerator PlayerStandAfterDealing()
+    {
+        //canOpenMenu = false;
+        while (playerHand.isDealing)
+        {
+            yield return null;
+        }
+
+        hitButton.interactable = false;
+        standButton.interactable = false;
+        PlayerStand();
         //canOpenMenu = true;
     }
 
@@ -264,7 +291,9 @@ public class BlackjackGameManager : MonoBehaviour
         bool playerWon = result == "Player Wins!" || 
             result == "Dealer Busts! Player Wins!";
 
-        bettingSystem.Payout(playerWon);
+        bool playerTie = result == "It's a Tie!";
+
+        bettingSystem.Payout(playerWon, playerTie);
         restartButton.gameObject.SetActive(true);
 
     }
@@ -322,6 +351,7 @@ public class BlackjackGameManager : MonoBehaviour
         ResetGame();
 
         bettingSystem.balanceTextCanvasGroup.alpha = 0f;
+        bettingSystem.player.ResetBalance();
         bettingSystem.betTextCanvasGroup.alpha = 0f;
         FindObjectOfType<MenuManager>().ShowMainMenu();
     }

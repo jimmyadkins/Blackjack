@@ -111,11 +111,15 @@ public class BettingSystem : MonoBehaviour
     }
 
     // Method to payout the winnings
-    public void Payout(bool playerWon)
+    public void Payout(bool playerWon, bool playerTie)
     {
         if (playerWon)
         {
             player.AddWinnings(currentBet * 2);  // Double the bet if the player wins
+        }
+        if (playerTie)
+        {
+            player.AddWinnings(currentBet);
         }
         ClearBet();  // Clear the bet after payout
         UpdateUI();
